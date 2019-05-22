@@ -1,0 +1,1 @@
+filepath = 'C:\Users\rji4\Desktop\MATLAB\Data\Bistable_Data\';

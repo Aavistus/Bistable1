@@ -1,0 +1,53 @@
+% function removelatency
+
+loadpaths %load file path
+loadsubj %subject list
+
+for i = 1:length(subjlist)
+subject = subjlist{i};    
+load([filepath subject '.set'], '-mat')
+    n = 1;
+
+% Check if the latency between two consecutive markers (    
+    while n < length(EEG.event)
+        if strcmp(EEG.event(n).type,'numl') || strcmp(EEG.event(n).type,'back')
+           Lat = EEG.event(n+1).latency - EEG.event(n).latency;
+       
+           if Lat  < 1250          
+           EEG.event(n).type = 'ignore'; 
+           EEG.event(n+1).type = 'ignore';
+           n = n + 1;
+           else
+           n = n + 1;
+           end
+        else
+           n = n + 1;
+        end
+    end
+    
+    
+    nronuml = 0;
+    nroback = 0;
+    m = 1;
+    
+    while m <= length(EEG.event) 
+         check1 = strcmp(EEG.event(m).type,numl);
+         check2 = strcmp(EEG.event(m).type,back);
+    
+         if check1 == 1 && m <= length(EEG.event)
+            nronuml = nronuml + 1;
+            m = m + 1;
+         elseif check2 == 1 && m <= length(EEG.event)
+            nroback = nroback + 1; 
+            m = m + 1;
+         else
+            m = m+1;
+         end
+    end
+    
+    diff = nronuml - nroback; %difference of number of markers
+    
+save([filepath subject 'count.mat'],'diff');      
+save([filepath subject '.set'], 'EEG');
+end  
+clear;
